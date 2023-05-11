@@ -1,0 +1,25 @@
+version: '2.3'
+services:
+  nginx:
+    build: ./nginx
+    networks:
+      - front
+      - back
+    ports:
+      - "80:80"
+    depends_on:
+      - flask
+
+  flask:
+    build: ./api
+    image: "flask:latest"
+    working_dir: /opt/flask
+    command: bash -c "flask run -h 0.0.0.0 -p 5000"
+    ports:
+    - "5000:5000"
+    networks:
+      - back
+
+networks:
+  front:
+  back:
