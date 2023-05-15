@@ -1,7 +1,6 @@
 from flask import Flask, jsonify, request
 import mysql.connector
 
-
 app = Flask(__name__)
 db = mysql.connector.connect(
     host="0.0.0.0",
@@ -38,14 +37,52 @@ def show_columns():
     
     return jsonify(cursor.fetchone())
 
-@app.route("/api/createdatabase", methods=['GET'])
+@app.route("/api/createdatabase", methods=['POST'])
 def create_database():
-    newDatabaseName = request.args.get('database')
+    newDatabaseName = request.form.get('database')
 
     cursor = db.cursor()
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {newDatabaseName}")
 
-    return "Create"
+    return f"Create {newDatabaseName}"
+
+@app.route("/api/createtable", methods=['POST'])
+def create_table():
+    ''' Estructure SQL create JSON table
+    {
+        "database": "Name of database",
+        "table": "Name of table for create",
+        "columns": {
+            "name of columns": {
+                "type": ["varchar(100)", ...]
+            }
+        }
+    }
+    '''
+    jsonData = request.get_json()
+    databaseName = jsonData["database"]
+    newTableName = jsonData["table"]
+    tableColumns = jsonData["columns"]
+
+    cache = ""
+
+    for objType in tableColumns:
+        cache += objType + " "
+        cache += " ".join(tableColumns[objType]["type"]) + ","
+
+
+    querySQL = f'''
+    CREATE TABLE {newTableName} (
+        {cache[:-1]}
+    )
+    '''
+
+    cursor = db.cursor()
+    cursor.execute(f"USE {databaseName}")
+    cursor.execute(querySQL)
+    
+
+    return querySQL
 
 
 if __name__ == '__main__':
