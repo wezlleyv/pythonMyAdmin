@@ -25,5 +25,13 @@ def show_tables():
 
     return jsonify(cursor.fetchall())
 
+@app.route("/api/columns", methods=['GET'])
+def show_columns():
+    cursor = db.cursor()
+    cursor.execute(f"USE {request.args.get('database')}")
+    cursor.execute(f"SHOW COLUMNS FROM {request.args.get('table')}")
+    
+    return jsonify(cursor.fetchone())
+
 if __name__ == '__main__':
     app.run(debug=True)
