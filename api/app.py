@@ -1,5 +1,5 @@
 from flask import Flask, jsonify, request
-import mysql.connector
+import mysql.connector, json
 
 app = Flask(__name__)
 db = mysql.connector.connect(
@@ -11,31 +11,37 @@ db = mysql.connector.connect(
 
 @app.route("/api/databases", methods=['GET'])
 def show_databases():
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
     cursor.execute("SHOW DATABASES")
 
-    return jsonify(cursor.fetchall())
+    response = cursor.fetchall()
+
+    return jsonify(response)
 
 @app.route("/api/tables", methods=['GET'])
 def show_tables():
     databaseName = request.args.get('database')
 
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
     cursor.execute(f"USE {databaseName}")
     cursor.execute("SHOW TABLES")
 
-    return jsonify(cursor.fetchall())
+    response = cursor.fetchall()
+
+    return jsonify(response)
 
 @app.route("/api/columns", methods=['GET'])
 def show_columns():
     databaseName = request.args.get('database')
     tableName = request.args.get('table')
 
-    cursor = db.cursor()
+    cursor = db.cursor(dictionary=True)
     cursor.execute(f"USE {databaseName}")
     cursor.execute(f"SHOW COLUMNS FROM {tableName}")
-    
-    return jsonify(cursor.fetchone())
+
+    response = cursor.fetchall()
+
+    return jsonify(response)
 
 @app.route("/api/createdatabase", methods=['POST'])
 def create_database():
@@ -83,6 +89,41 @@ def create_table():
     
 
     return querySQL
+
+@app.route("/api/insert", methods=['GET', 'POST'])
+def insert_into():
+    database = request.args.get('database')
+    table = request.args.get('table')
+    client = app.test_client()
+
+    response = client.get(f"/api/columns?database={database}&table={table}")
+    response = json.loads(response.get_data())
+    
+    if request.method == "POST":
+        columns = []
+        for columnsInFor in range(len(response)):
+            columns.append(response[columnsInFor]['Field'])
+
+        jsonData = request.get_json()
+        valuesList = jsonData['values']
+
+        values = []
+        for value in valuesList:
+            if type(value) == int: pass
+            else:
+                value = f"'{value}'"
+        
+            values.append(value)
+
+        valuesQuerySQL = ', '.join(str(value) for value in values)
+        columnsQuerySQL = ', '.join(columns)
+
+        querySQL = f"INSERT INTO {table} ({columnsQuerySQL}) VALUES ({valuesQuerySQL})"
+
+        cursor = db.cursor()
+        cursor.execute(querySQL)
+
+        return f"Finished insert into {table}"
 
 
 if __name__ == '__main__':
