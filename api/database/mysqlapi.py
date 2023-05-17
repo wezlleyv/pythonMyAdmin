@@ -111,6 +111,7 @@ class MySQL(MethodView):
         for columnsInFor in range(len(response)):
             columns.append(response[columnsInFor]['Field'])
 
+        # { "values": [.., .., ..,] } in order
         valuesList = jsonData['values']
 
         values = []
