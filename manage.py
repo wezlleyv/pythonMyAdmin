@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 import os, sys
-import app
+from api import app
 
 
 def main():
     if sys.argv[1] == "prod":
-        env = "config.production"
+        env = "api.config.production"
     if sys.argv[1] == "dev":
-        env = "config.development"
+        env = "api.config.development"
 
     try:
         os.environ.setdefault("APP_CONFIG_FILE", env)

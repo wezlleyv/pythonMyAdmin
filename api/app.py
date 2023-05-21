@@ -1,8 +1,8 @@
-from flask import Flask, request
+from flask import Flask
 import mysql.connector, os
 
 # local
-from database.mysqlapi import MySQL
+from api.database.mysqlapi import MySQL
 
 app = Flask(__name__)
 
@@ -12,7 +12,7 @@ def register_api(application, database, server):
         app.add_url_rule(f"/api/mysql", view_func=mysqlapi)
 
 def run():
-    # get configc
+    # get config
     app.config.from_object(os.environ.get("APP_CONFIG_FILE"))
 
     # connect to database server
