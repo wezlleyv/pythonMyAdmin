@@ -6,13 +6,13 @@ from database.mysqlapi import MySQL
 
 app = Flask(__name__)
 
-def register_api(app, database, server):
+def register_api(application, database, server):
     if server == "mysql":
-        mysqlapi = MySQL.as_view("mysql", mysql.connector.connect(**database), app)
+        mysqlapi = MySQL.as_view("mysql", mysql.connector.connect(**database), application)
         app.add_url_rule(f"/api/mysql", view_func=mysqlapi)
 
 def run():
-    # get config
+    # get configc
     app.config.from_object(os.environ.get("APP_CONFIG_FILE"))
 
     # connect to database server
