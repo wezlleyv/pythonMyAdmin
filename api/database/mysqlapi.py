@@ -132,6 +132,16 @@ class MySQL(MethodView):
 
         return f"Finished insert into {table}"
 
+    def execute_query(self, jsonData):
+        try:
+            query = jsonData['query']
+            cursor = self.database.cursor()
+            cursor.execute(query)
+
+            return "Sucessfuly"
+        except Exception as arr:
+            return arr
+
     def post(self):
         option = request.args.get("option")
 
