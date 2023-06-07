@@ -2,10 +2,11 @@
 DEBUG = True
 
 DATABASE = {
-    "SERVER": "postgresql",
+    "SERVER": "mysql",
     "DATA": {
-        "host": "drona.db.elephantsql.com",
-        "user": "ssecbtdj",
-        "password": "0OoB5SBUjWvZumUcaqSB-hxdzaHoWWmn",
+        "host": "0.0.0.0",
+        "port": "3306",
+        "user": "root",
+        "password": "root",
     }
 }

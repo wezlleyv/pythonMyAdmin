@@ -1,0 +1,19 @@
+* {
+    margin: 0px;
+    padding: 0px; 
+}
+
+main {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+}
+
+main aside {
+    height: 100vh;
+    width: 100%;
+}
+
+main section {
+    height: 100vh;
+    width: 100%;
+}
