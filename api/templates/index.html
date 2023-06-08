@@ -11,7 +11,15 @@
     
     <main>
         <aside>
-            {{ data }}
+            <ul>
+                {% for database, tables in d.items() %}
+                <li>{{database}}
+                    {% for table in tables %}
+                    {{table}}
+                    {% endfor %}
+                </li>
+                {% endfor %}
+            </ul>
         </aside>
         <section>
 
