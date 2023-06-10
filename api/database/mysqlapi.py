@@ -43,8 +43,19 @@ class MySQL(MethodView):
 
         return jsonify(response)
 
+    def get_values(self):
+        database = request.args.get("database")
+        table = request.args.get("table")
+
+        cursor = self.database.cursor(dictionary=True)
+        cursor.execute(f"USE {database}")
+        cursor.execute(f"SELECT * FROM {table}")
+
+        response = cursor.fetchall()
+
+        return jsonify(response)
+
     def get(self):
-        requestGet = request.args
         option = request.args.get("option")
 
         if option == "get_databases":
@@ -53,6 +64,8 @@ class MySQL(MethodView):
             return self.get_tables()
         elif option == "get_columns":
             return self.get_columns()
+        elif option == "get_values":
+            return self.get_values()
     
     # POST method
 

@@ -12,17 +12,41 @@
     <main>
         <aside>
             <ul>
-                {% for database, tables in d.items() %}
-                <li>{{database}}
-                    {% for table in tables %}
-                    {{table}}
-                    {% endfor %}
-                </li>
+                {% for database, tables in databaseList.items() %}
+                <div class="content-of-database-list">
+                    <li class="main-of-content">
+                        <span class="title"> {{ database }}</span>
+                        <ul class="subtitle">
+                            {% for table in tables %}
+                            <a href="/manage/{{database}}/{{table}}"><li>{{table}}</li></a>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                </div>
                 {% endfor %}
             </ul>
         </aside>
-        <section>
 
+        <section>
+            <div class="top-section">
+                <div>
+                    {{ data[0] }}
+                    {{ data[1] }}
+                    {{ data[2] }}
+                </div>
+            </div>
+            <div class="nav-section">
+                <ul>
+                    <a><li>Procurar</li></a>
+                    <a><li>Estrutura</li></a>
+                    <a><li>SQL</li></a>
+                    <a><li>Pesquisar</li></a>
+                    <a><li>Insere</li></a>
+                </ul>
+            </div>
+            <div class="main-section">
+                {{content}}
+            </div>
         </section>
     </main>
 
