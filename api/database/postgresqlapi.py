@@ -22,7 +22,7 @@ class PostgreSQL(MethodView):
 
         return tables
     
-    def get_tables(self, database):
+    def get_tables(self):
         cursor = self.database.cursor()
         cursor.execute(f"""
         SELECT
@@ -47,12 +47,12 @@ class PostgreSQL(MethodView):
         if option == "get_databases":
             return self.get_databases()
         elif option == "get_tables":
-            return self.get_tables(request.args.get("database"))
+            return self.get_tables()
 
     # POST METHOD
 
-    def create_databases(self, database):
-        newDatabaseName = database
+    def create_databases(self):
+        newDatabaseName = request.args.get("database")
 
         self.database.autocommit = True
 
@@ -61,7 +61,9 @@ class PostgreSQL(MethodView):
 
         return f"Create {newDatabaseName}"
 
-    def create_table(self, jsonData):
+    def create_table(self):
+        jsonData = request.get_json()
+
         databaseName = jsonData["database"]
         newTableName = jsonData["table"]
         columns = jsonData["columns"]
@@ -89,6 +91,6 @@ class PostgreSQL(MethodView):
         option = request.args.get("option")
 
         if option == "create_database":
-            return self.create_databases(request.args.get("database"))
+            return self.create_databases()
         elif option == "create_table":
-            return self.create_table(request.get_json())
+            return self.create_table()

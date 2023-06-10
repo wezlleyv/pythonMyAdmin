@@ -20,8 +20,8 @@ class MySQL(MethodView):
 
         return jsonify(response)
 
-    def get_tables(self, database):
-        databaseName = database
+    def get_tables(self):
+        databaseName = request.args.get("database")
 
         cursor = self.database.cursor(dictionary=True)
         cursor.execute(f"USE {databaseName}")
@@ -31,9 +31,9 @@ class MySQL(MethodView):
 
         return jsonify(response)
 
-    def get_columns(self, database, table):
-        databaseName = database
-        tableName = table
+    def get_columns(self):
+        databaseName = request.args.get("database")
+        tableName = request.args.get("table")
 
         cursor = self.database.cursor(dictionary=True)
         cursor.execute(f"USE {databaseName}")
@@ -50,21 +50,21 @@ class MySQL(MethodView):
         if option == "get_databases":
             return self.get_databases()
         elif option == "get_tables":
-            return self.get_tables(requestGet.get("database"))
+            return self.get_tables()
         elif option == "get_columns":
-            return self.get_columns(requestGet.get("database"), requestGet.get("table"))
+            return self.get_columns()
     
     # POST method
 
-    def create_databases(self, database):
-        newDatabaseName = database
+    def create_databases(self):
+        newDatabaseName = request.args.get("database")
 
         cursor = self.database.cursor()
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {newDatabaseName}")
 
         return f"Create {newDatabaseName}"
     
-    def create_table(self, jsonData):
+    def create_table(self):
         ''' Estructure SQL create JSON table
         {
             "database": "Name of database",
@@ -76,6 +76,7 @@ class MySQL(MethodView):
             }
         }
         '''
+        jsonData = request.get_json()
         databaseName = jsonData["database"]
         newTableName = jsonData["table"]
         tableColumns = jsonData["columns"]
@@ -100,7 +101,11 @@ class MySQL(MethodView):
 
         return f"Create {newTableName}"
 
-    def create_values(self, jsonData, database, table):
+    def create_values(self):
+        database = request.args.get("database")
+        table = request.args.get("table")
+        jsonData = request.get_json()
+
         client = self.app.test_client()
 
         response = client.get(f"/api/mysql?option=get_columns&database={database}&table={table}")
@@ -132,8 +137,9 @@ class MySQL(MethodView):
 
         return f"Finished insert into {table}"
 
-    def execute_query(self, jsonData):
+    def execute_query(self):
         try:
+            jsonData = request.get_json()
             query = jsonData['query']
             cursor = self.database.cursor()
             cursor.execute(query)
@@ -146,10 +152,12 @@ class MySQL(MethodView):
         option = request.args.get("option")
 
         if option == "create_database":
-            return self.create_databases(request.args.get("database"))
+            return self.create_databases()
         elif option == "create_table":
-            return self.create_table(request.get_json())
+            return self.create_table()
         elif option == "create_values":
-            return self.create_values(request.get_json(), request.args.get("database"), request.args.get("table"))
+            return self.create_values()
+        elif option == "execute_query":
+            return self.execute_query()
         
         return "Where is the option?"
